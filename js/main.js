@@ -60,13 +60,13 @@ socket.on('log', function (array) {
 ////////////////////////////////////////////////
 
 function sendMessage(message) {
-  console.log('Client sending message: ', message);
-  socket.emit('message', message);
+  console.log('I sending message: ', message);
+  socket.emit('message', message, room);
 }
 
 // This client receives a message
 socket.on('message', function (message) {
-  console.log('Client received message:', message);
+  console.log('I received message:', message);
   if (message === 'got user media') {
     maybeStart();
   } else if (message.type === 'offer') {
@@ -129,7 +129,9 @@ function maybeStart() {
   if (!isStarted && typeof localStream !== 'undefined' && isChannelReady) {
     console.log('>>>>>> creating peer connection');
     createPeerConnection();
-    pc.addStream(localStream);
+    localStream.getTracks().forEach(function(track) {
+      pc.addTrack(track, localStream);
+    });
     isStarted = true;
     console.log('isInitiator', isInitiator);
     if (isInitiator) {
