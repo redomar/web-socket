@@ -1,18 +1,18 @@
 'use strict';
 
-var os = require('os');
-var nodeStatic = require('node-static');
-var http = require('http');
-var socketIO = require('socket.io');
+import os from "os";
+import nodeStatic from "node-static";
+import http from "http";
+const socketIO = require('socket.io');
 
-var fileServer = new (nodeStatic.Server)();
-var app = http.createServer(function (req, res) {
+const fileServer = new (nodeStatic.Server)();
+const app = http.createServer(function (req, res) {
   fileServer.serve(req, res);
 }).listen(8080);
 
 //background socket connection
 
-var io = socketIO.listen(app);
+const io = socketIO.listen(app);
 io.sockets.on('connection', function (socket) {
 
   // convenience function to log server messages on the client

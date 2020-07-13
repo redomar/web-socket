@@ -180,7 +180,7 @@ function handleCreateOfferError(event) {
 
 function doCall() {
   console.log('Sending offer to peer');
-  pc.createOffer(setLocalAndSendMessage, handleCreateOfferError);
+  pc.createOffer().then(setLocalAndSendMessage, handleCreateOfferError);
 }
 
 function doAnswer() {
@@ -192,9 +192,10 @@ function doAnswer() {
 }
 
 function setLocalAndSendMessage(sessionDescription) {
-  pc.setLocalDescription(sessionDescription);
-  console.log('setLocalAndSendMessage sending message', sessionDescription);
-  sendMessage(sessionDescription);
+  pc.setLocalDescription(sessionDescription).then(() => {
+    // console.log('setLocalAndSendMessage sending message', sessionDescription);
+    sendMessage(sessionDescription);
+  });
 }
 
 function onCreateSessionDescriptionError(error) {
