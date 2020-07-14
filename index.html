@@ -2,25 +2,25 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
 
-  <title>Username based WebRTC</title>
+    <title>Username based WebRTC</title>
 </head>
 
 <body class="m-2">
-  <h1 class="font-semibold text-lg">Username Based Realtime communication with WebRTC</h1>
+    <h1 class="font-semibold text-lg">Username Based Realtime communication with WebRTC</h1>
 
-  <div id="videos" class="flex flex-row">
-    <video class="border h-32" id="localVideo" autoplay muted playsinline></video>
-    <video class="border h-32" id="remoteVideo" autoplay playsinline></video>
-  </div>
-  <button class="bg-red-600 text-white p-2 hidden" id='call'>Call</button>
+    <div id="videos" class="flex flex-row">
+        <video class="border h-32" id="localVideo" autoplay muted playsinline></video>
+        <video class="border h-32" id="remoteVideo" autoplay playsinline></video>
+    </div>
+    <button class="bg-red-600 text-white p-2 hidden" id='call'>Call</button>
 
-  <script src="https://www.medicam.io/socket.io/socket.io.js"></script>
-  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-  <script src='main.js'></script>
+    <script src="https://www.medicam.io/socket.io/socket.io.js"></script>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src='main.js'></script>
 </body>
 
 </html>

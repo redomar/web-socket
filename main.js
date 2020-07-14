@@ -2,9 +2,9 @@
 let username = `ryan`
 let callBtn = document.getElementById('call')
 let pcConfig = {
-  'iceServers': [{
-    'urls': 'stun:stun4.l.google.com:19302'
-  }]
+    'iceServers': [{
+        'urls': 'stun:stun4.l.google.com:19302'
+    }]
 };
 
 const localVideo = document.getElementById('localVideo')
@@ -13,8 +13,8 @@ const remoteVideo = document.getElementById('remoteVideo')
 
 // Set up audio and video regardless of what devices are present.
 let sdpConstraints = {
-  offerToReceiveAudio: true,
-  offerToReceiveVideo: true
+    offerToReceiveAudio: true,
+    offerToReceiveVideo: true
 };
 
 
@@ -24,23 +24,23 @@ socket.emit('join', username)
 
 
 socket.on('connect', function () {
-  console.log('connected');
+    console.log('connected');
 })
 
 socket.on('on-join', function (response) {
-  console.log(response);
-  if (response) {
-    callBtn.classList.remove('hidden')
-  }
+    console.log(response);
+    if (response) {
+        callBtn.classList.remove('hidden')
+    }
 })
 
 socket.on('on-call', function (data) {
-  console.log('data');
-  console.log(data);
+    console.log('data');
+    console.log(data);
 })
 
 socket.on('disconnect', function () {
-  console.log('disconnected')
+    console.log('disconnected')
 })
 
 
@@ -53,7 +53,7 @@ socket.on('disconnect', function () {
 // })
 
 function sendMesage(eventName, data) {
-  socket.emit(eventName, data);
+    socket.emit(eventName, data);
 }
 
 // function setLocalAndSendMessage(sessionDescription) {
@@ -64,17 +64,17 @@ function sendMesage(eventName, data) {
 //   }
 
 navigator.mediaDevices.getUserMedia({
-  audio: false,
-  video: true
+    audio: false,
+    video: true
 })
-  .then(gotStream)
-  .catch(function (e) {
-    alert('getUserMedia() error: ' + e.name);
-  });
+    .then(gotStream)
+    .catch(function (e) {
+        alert('getUserMedia() error: ' + e.name);
+    });
 
 function gotStream(stream) {
-  console.log('Adding local stream.');
-  localStream = stream;
-  localVideo.srcObject = stream;
-  // sendMessage('got user media');
+    console.log('Adding local stream.');
+    localStream = stream;
+    localVideo.srcObject = stream;
+    // sendMessage('got user media');
 }
