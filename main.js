@@ -1,5 +1,5 @@
 
-let username = `ryan-${Math.random().toString(36).substring(8)}`
+let username = `ryan-${Math.random().toString(36).substring(9)}`
 let callBtn = document.getElementById('call')
 let pc
 let him
@@ -25,8 +25,8 @@ socket.emit('join', username)
 
 /////////////////////////////////////////////
 
-socket.on('connect', function () {
-  // console.log('connected');
+socket.on('log', function (logs) {
+  console.log(logs);
 })
 
 socket.on('on-join', function (unique) {
@@ -34,14 +34,31 @@ socket.on('on-join', function (unique) {
   if (unique) callBtn.classList.remove('hidden')
 })
 
-socket.on('on-call', async function (data) {
+
+
+callBtn.addEventListener('click', async function () {
+  console.log('calling')
   createPeerConnection()
-  let { username, offer } = data
-  him = username
+  localStream.getTracks().forEach(function (track) {
+    pc.addTrack(track, localStream);
+  });
+  let offer = await pc.createOffer()
+  await pc.setLocalDescription(offer)
+  socket.emit('call', offer);
+
+})
+
+socket.on('on-call', async function (offer) {
+  createPeerConnection()
+  localStream.getTracks().forEach(function (track) {
+    pc.addTrack(track, localStream);
+  });
+  // let { username, offer } = data
+
   await pc.setRemoteDescription(new RTCSessionDescription(offer))
   let answer = await pc.createAnswer(sdpConstraints)
   await pc.setLocalDescription(new RTCSessionDescription(answer))
-  socket.emit('answer', { username, answer })
+  socket.emit('answer', answer)
 
   // console.log(data);
 })
@@ -50,7 +67,7 @@ socket.on('on-answer', async function (answer) {
   console.log('answer');
   console.log(answer);
 
-  let desc = new RTCSessionDescription({ ...answer })
+  let desc = new RTCSessionDescription(answer)
   await pc.setRemoteDescription(desc)
 })
 
@@ -105,10 +122,10 @@ function createPeerConnection() {
 }
 
 
-function handleIceCandidate(candidate) {
-  console.log('icecandidate event: ', candidate);
-  if (candidate) {
-    socket.emit('candidate', { 'username': him, 'candidate': candidate })
+function handleIceCandidate(iceConnectionEvent) {
+  console.log('icecandidate event: ', iceConnectionEvent);
+  if (iceConnectionEvent) {
+    socket.emit('candidate', iceConnectionEvent.candidate)
     // sendMessage({
     //   type: 'candidate',
     //   label: candidate.candidate.sdpMLineIndex,
@@ -139,15 +156,6 @@ function handleRemoteStreamRemoved(event) {
 
 
 
-callBtn.addEventListener('click', async function () {
-  console.log('calling')
-  createPeerConnection()
-
-  let offer = await pc.createOffer()
-  await pc.setLocalDescription(offer)
-  socket.emit('call', { 'username': prompt('Call who?', 'simon'), 'offer': offer });
-
-})
 
 
 
