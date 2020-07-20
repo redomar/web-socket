@@ -1,12 +1,24 @@
 
-let username = `ryan-${Math.random().toString(36).substring(9)}`
+let username = `bh592SG4jgDUhthdVGaK`/*${Math.random().toString(36).substring(9)}*/
 let callBtn = document.getElementById('call')
 let pc
 let him
 let pcConfig = {
-  'iceServers': [{
-    'urls': 'stun:stun4.l.google.com:19302'
-  }]
+  iceServers: [
+    {
+      "urls": ["stun:relay.backups.cz"],
+    },
+    {
+      url: 'turn:relay.backups.cz',
+      credential: 'webrtc',
+      username: 'webrtc'
+    },
+    {
+      url: 'turn:relay.backups.cz?transport=tcp',
+      credential: 'webrtc',
+      username: 'webrtc'
+    }
+  ]
 };
 
 const localVideo = document.getElementById('localVideo')
@@ -30,21 +42,23 @@ socket.on('log', function (logs) {
 })
 
 socket.on('on-join', function (unique) {
-  console.log((unique) ? `User ${username} is unique` : `User ${username} already exists`)
+  console.log((unique) ? `Welcome to ${username} room` : `Room ${username} is full`)
   if (unique) callBtn.classList.remove('hidden')
 })
 
 
-
-callBtn.addEventListener('click', async function () {
+socket.on('on-exists', async function (exists) {
   console.log('calling')
-  createPeerConnection()
-  localStream.getTracks().forEach(function (track) {
-    pc.addTrack(track, localStream);
-  });
-  let offer = await pc.createOffer()
-  await pc.setLocalDescription(offer)
-  socket.emit('call', offer);
+  gotStreamPromise.then(async got => {
+    console.log(got);
+    createPeerConnection()
+    localStream.getTracks().forEach(function (track) {
+      pc.addTrack(track, localStream);
+    });
+    let offer = await pc.createOffer()
+    await pc.setLocalDescription(offer)
+    socket.emit('call', offer);
+  })
 
 })
 
@@ -74,13 +88,16 @@ socket.on('on-answer', async function (answer) {
 socket.on('on-candidate', async function (data) {
   console.log('oncandiate')
   console.log(data)
+  if (data) {
+    let candidate = new RTCIceCandidate({
+      candidate: data.candidate,
+      sdpMLineIndex: data.sdpMLineIndex,
+      sdpMid: data.sdpMid,
+    });
+    console.log(candidate);
+    pc.addIceCandidate(candidate);
 
-  let candidate = new RTCIceCandidate({
-    sdpMLineIndex: data.sdpMLineIndex,
-    sdpMid: data.sdpMid,
-    candidate: data.candidate,
-  });
-  await pc.addIceCandidate(candidate);
+  }
 })
 
 /////////////////////////////////////////////
@@ -89,7 +106,7 @@ function sendMesage(eventName, data) {
   socket.emit(eventName, data);
 }
 
-navigator.mediaDevices.getUserMedia({
+const gotStreamPromise = navigator.mediaDevices.getUserMedia({
   audio: true,
   video: true
 })
@@ -102,7 +119,7 @@ function gotStream(stream) {
   console.log('Adding local stream.');
   localStream = stream;
   localVideo.srcObject = stream;
-  // sendMessage('got user media');
+  return true
 }
 
 /////////////////////////////////////////////
@@ -149,7 +166,9 @@ function handleRemoteStreamRemoved(event) {
 
 /////////////////////////////////////////////
 
-
+window.addEventListener('beforeunload', (event) => {
+  socket.emit('disconnect')
+})
 
 
 

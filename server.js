@@ -52,6 +52,7 @@ io.sockets.on('connection', function (socket) {
       socket.join(room);
       socket.handshake.query.room = room;
       socket.emit('on-join', true);
+      socket.emit('on-exists', true);
     } else { // max two clients
       socket.emit('on-join', false);
     }
